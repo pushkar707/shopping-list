@@ -1,9 +1,4 @@
-"use client";
-
-import { TrpcQueryOptionsForUseQueries } from "@trpc/react-query/dist/internals/useQueries";
-import { UseTRPCQueryResult } from "@trpc/react-query/shared";
 import Head from "next/head";
-import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { api } from "~/utils/api";
@@ -18,20 +13,28 @@ export default function Home() {
     if(inputref.current && inputref.current.value.length){
       const item = inputref.current.value
       addItemFunction.mutate({item})
-      items.data?.push({item: inputref.current.value, checked: false , id:"Null"})
+      items.push({item: inputref.current.value, checked: false , id:"Null"})
       inputref.current.value = ""
     }
   }
 
   // SHOWCSING ITEMS
-  let items = api.shoppingList.getItems.useQuery()
+  const [items, setItems] = useState<Array<{item:string, checked: boolean ,id: string}>>(api.shoppingList.getItems.useQuery().data || [{ item: 'string', checked: false, id: 'string' }]);
 
   // checkbox
 
   const handleCheckBoxesClient = (e:FormEvent<HTMLInputElement>,id:string) => {
     const checked = e.currentTarget.checked
-    e.currentTarget.checked = !checked
     checkItemFunction.mutate({id,checked:!checked})
+
+    const newItems = items.map(item => {
+      if(id === item.id){
+        return {...item, checked: !item.checked}
+      }
+      return item
+    })
+
+    setItems(newItems)
   }
   
   return (
@@ -57,7 +60,7 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {items.data && items.data.map(({item,checked,id}: {item:string, checked: boolean ,id: string},index:number) => {
+              {items.map(({item,checked,id}: {item:string, checked: boolean ,id: string},index:number) => {
                 return <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{index+1}</td>
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-base">{item}</td>
