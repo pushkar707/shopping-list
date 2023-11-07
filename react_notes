@@ -1,0 +1,6 @@
+useMemo:-
+
+-> It is used to bring efficiency to your rect app
+-> It is used when you some piece of code/function that takes lot of time in its execution. Usememo prevents rendering of that function every single time any state in the component changes. we can specify the variables/state on chage of whcih the useMwmo should work.
+
+-> It can also used with static obejcts and array. 
